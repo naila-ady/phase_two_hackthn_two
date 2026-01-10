@@ -754,10 +754,6 @@ video {
 .to-gray-600 {
   --tw-gradient-to: #4b5563 var(--tw-gradient-to-position);
 }
-.bg-clip-text {
-  -webkit-background-clip: text;
-          background-clip: text;
-}
 .p-1 {
   padding: 0.25rem;
 }
@@ -878,9 +874,6 @@ video {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity, 1));
-}
-.text-transparent {
-  color: transparent;
 }
 .text-white {
   --tw-text-opacity: 1;

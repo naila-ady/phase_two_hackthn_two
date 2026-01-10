@@ -7,7 +7,7 @@ import TodoForm from './components/TodoForm';
 import FilterControls from './components/FilterControls';
 import { Todo } from './types/Todo';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);

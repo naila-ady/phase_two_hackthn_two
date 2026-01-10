@@ -11,10 +11,7 @@ class TodoService:
         if not todo.title or len(todo.title.strip()) == 0:
             raise ValueError("Title must not be empty")
 
-        # Validate priority if provided
-        valid_priorities = ["low", "medium", "high"]
-        if todo.priority not in valid_priorities:
-            raise ValueError("Priority must be low, medium, or high")
+        # Priority is validated by the enum, so no need for manual validation
 
         db_todo = Todo(
             title=todo.title,

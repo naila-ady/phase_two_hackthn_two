@@ -1,24 +1,32 @@
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
 
+interface TodoFormData {
+  title: string;
+  description: string | undefined;
+  priority: 'low' | 'medium' | 'high';
+  category: string | undefined;
+  due_date: string | undefined;
+}
+
 interface TodoFormProps {
   onSubmit: (todo: Omit<Todo, 'id' | 'created_at' | 'updated_at'>) => void;
 }
 
 export default function TodoForm({ onSubmit }: TodoFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TodoFormData>({
     title: '',
-    description: '',
-    priority: 'medium' as 'low' | 'medium' | 'high',
-    category: '',
-    due_date: ''
+    description: undefined,
+    priority: 'medium',
+    category: undefined,
+    due_date: undefined
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value || undefined  // Convert empty string to undefined
     }));
   };
 
@@ -28,20 +36,21 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
     // Prepare the todo data with proper format for backend
     const todoData = {
       title: formData.title.trim(),  // Ensure title is trimmed
-      description: formData.description || null,  // Convert empty string to null
+      description: formData.description || undefined,  // Convert empty string to undefined
       priority: formData.priority,
-      category: formData.category || null,  // Convert empty string to null
-      due_date: formData.due_date ? formData.due_date : null  // Convert empty string to null
+      category: formData.category || undefined,  // Convert empty string to undefined
+      due_date: formData.due_date ? new Date(formData.due_date + 'T00:00:00').toISOString() : undefined,  // Format date as ISO string or undefined
+      completed: false  // New todos are not completed by default
     };
 
     onSubmit(todoData);
     // Reset form
     setFormData({
       title: '',
-      description: '',
+      description: undefined,
       priority: 'medium',
-      category: '',
-      due_date: ''
+      category: undefined,
+      due_date: undefined
     });
   };
 
@@ -96,7 +105,7 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
             type="text"
             id="category"
             name="category"
-            value={formData.category}
+            value={formData.category || ''}
             onChange={handleChange}
             className="w-full border border-[color:rgb(var(--border-rgb))] rounded-lg px-4 py-3 bg-[color:rgb(var(--background-rgb))] text-[color:rgb(var(--text-primary-rgb))] focus:ring-2 focus:ring-[color:rgb(var(--primary-rgb))] focus:border-transparent transition-all duration-200"
             placeholder="Work, Personal, Shopping, etc."
@@ -110,7 +119,7 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
             type="date"
             id="due_date"
             name="due_date"
-            value={formData.due_date}
+            value={formData.due_date || ''}
             onChange={handleChange}
             className="w-full border border-[color:rgb(var(--border-rgb))] rounded-lg px-4 py-3 bg-[color:rgb(var(--background-rgb))] text-[color:rgb(var(--text-primary-rgb))] focus:ring-2 focus:ring-[color:rgb(var(--primary-rgb))] focus:border-transparent transition-all duration-200"
           />
@@ -122,7 +131,7 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
           <textarea
             id="description"
             name="description"
-            value={formData.description}
+            value={formData.description || ''}
             onChange={handleChange}
             rows={3}
             className="w-full border border-[color:rgb(var(--border-rgb))] rounded-lg px-4 py-3 bg-[color:rgb(var(--background-rgb))] text-[color:rgb(var(--text-primary-rgb))] focus:ring-2 focus:ring-[color:rgb(var(--primary-rgb))] focus:border-transparent transition-all duration-200"

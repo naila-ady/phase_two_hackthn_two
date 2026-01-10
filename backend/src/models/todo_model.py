@@ -3,16 +3,11 @@ from datetime import datetime
 from typing import Optional
 import uuid
 
-class Priority(str):
-    low = "low"
-    medium = "medium"
-    high = "high"
-
 class TodoBase(SQLModel):
     title: str
     description: Optional[str] = None
     completed: bool = False
-    priority: str = Priority.medium
+    priority: str = "medium"
     category: Optional[str] = None
     due_date: Optional[datetime] = None
 

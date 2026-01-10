@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from src.api.todo_router import router as todo_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+from src.database import engine
+from src.models.todo_model import Todo
 
 app = FastAPI(
     title="Todo API",
@@ -17,6 +19,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Create database tables
+@app.on_event("startup")
+def on_startup():
+    Todo.metadata.create_all(bind=engine)
 
 # Include the todo router
 app.include_router(todo_router, prefix="/api/v1", tags=["todos"])
