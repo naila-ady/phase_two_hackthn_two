@@ -36,13 +36,13 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
     e.preventDefault();
 
     // Prepare the todo data with proper format for backend
-    const todoData = {
+    const todoData: Omit<Todo, 'id' | 'created_at' | 'updated_at'> = {
       title: formData.title.trim(),  // Ensure title is trimmed
       description: formData.description || undefined,  // Convert empty string to undefined
       priority: formData.priority,
       category: formData.category || undefined,  // Convert empty string to undefined
       due_date: formData.due_date ? new Date(formData.due_date + 'T00:00:00').toISOString() : undefined,  // Format date as ISO string or undefined
-      completed: false  // New todos are not completed by default
+      completed: formData.completed  // Use the completed state from form
     };
 
     onSubmit(todoData);
