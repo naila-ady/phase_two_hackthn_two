@@ -5,6 +5,7 @@ import axios from 'axios';
 import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 import FilterControls from './components/FilterControls';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Todo } from './types/Todo';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
@@ -154,24 +155,26 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <header className="text-center mb-10">
-        <h1 className="text-4xl font-bold text-[color:rgb(var(--primary-rgb))] mb-2">
-          NADY'S TASK TRACKER
-        </h1>
-        <p className="text-[color:rgb(var(--text-muted-rgb))]">Organize your tasks with style</p>
-      </header>
+    <ProtectedRoute>
+      <div className="max-w-4xl mx-auto">
+        <header className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-[color:rgb(var(--primary-rgb))] mb-2">
+            NADY'S TASK TRACKER
+          </h1>
+          <p className="text-[color:rgb(var(--text-muted-rgb))]">Organize your tasks with style</p>
+        </header>
 
-      <div className="space-y-8">
-        <TodoForm onSubmit={addTodo} />
-        <FilterControls onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
-        <TodoList
-          todos={filteredTodos}
-          onUpdate={updateTodo}
-          onDelete={deleteTodo}
-          onToggleCompletion={toggleCompletion}
-        />
+        <div className="space-y-8">
+          <TodoForm onSubmit={addTodo} />
+          <FilterControls onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
+          <TodoList
+            todos={filteredTodos}
+            onUpdate={updateTodo}
+            onDelete={deleteTodo}
+            onToggleCompletion={toggleCompletion}
+          />
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

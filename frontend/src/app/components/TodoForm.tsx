@@ -7,6 +7,7 @@ interface TodoFormData {
   priority: 'low' | 'medium' | 'high';
   category: string | undefined;
   due_date: string | undefined;
+  completed: boolean;
 }
 
 interface TodoFormProps {
@@ -19,7 +20,8 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
     description: undefined,
     priority: 'medium',
     category: undefined,
-    due_date: undefined
+    due_date: undefined,
+    completed: false
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -50,7 +52,8 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
       description: undefined,
       priority: 'medium',
       category: undefined,
-      due_date: undefined
+      due_date: undefined,
+      completed: false
     });
   };
 
