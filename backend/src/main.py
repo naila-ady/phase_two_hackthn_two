@@ -22,7 +22,18 @@ load_dotenv()
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 if not allowed_origins or allowed_origins == [""]:
     # Default to allowing all in development, but in production specify exact origins
-    allowed_origins = ["*"] if os.getenv("DEBUG", "True").lower() == "true" else []
+    if os.getenv("DEBUG", "True").lower() == "true":
+        allowed_origins = ["*"]
+    else:
+        # In production, allow common origins including Vercel deployments
+        allowed_origins = [
+            "https://nkamdar-todo-task-tracker.hf.space",
+            "https://phase-two-hackthn-two.vercel.app",  # Your Vercel domain
+            # Add other domains as needed
+        ]
+else:
+    # Clean up any empty strings from the split
+    allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
