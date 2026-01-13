@@ -22,7 +22,12 @@ The frontend is built with Next.js and can be deployed to Vercel (recommended) o
 ### Prerequisites
 - A Hugging Face account
 - Git installed locally
-- The `todo_task_tracker` directory (your Hugging Face Space repository)
+- A separate Hugging Face Space repository (cloned from your Hugging Face Space)
+- The `todo_task_tracker` directory contains the prepared files for deployment
+
+### Important Note
+The `todo_task_tracker` directory in your main project is NOT the same as your Hugging Face Space repository.
+It's a prepared set of files that need to be copied to your actual Hugging Face Space repository.
 
 ### Steps
 

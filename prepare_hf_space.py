@@ -90,11 +90,14 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 
     print("Updated README.md for Hugging Face Space")
 
-    print(f"\nSuccessfully prepared Hugging Face Space in '{hf_space_dir}'")
+    print(f"\nSuccessfully prepared Hugging Face Space files in '{hf_space_dir}'")
+    print("\nIMPORTANT: The 'todo_task_tracker' directory is NOT your Hugging Face Space repository.")
+    print("It contains the prepared files that need to be copied to your actual Hugging Face Space repository.")
     print("\nTo deploy to Hugging Face Spaces:")
-    print("1. Navigate to your Hugging Face Space repository")
-    print("2. Add and commit these files: git add . && git commit -m 'Update for deployment'")
-    print("3. Push to Hugging Face: git push")
+    print("1. Navigate to your ACTUAL Hugging Face Space repository (cloned from Hugging Face)")
+    print("2. Copy all files from 'todo_task_tracker' to your Hugging Face Space repository")
+    print("3. Add and commit these files: git add . && git commit -m 'Update for deployment'")
+    print("4. Push to Hugging Face: git push")
     print("\nThe space should automatically rebuild and deploy!")
 
 if __name__ == "__main__":

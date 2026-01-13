@@ -1,0 +1,62 @@
+# Final Deployment Commands
+
+## 1. Push your main project to GitHub
+```bash
+cd C:\hck_ll_phase_II\phase_two_hackthn_two
+git add .
+git commit -m "Final deployment configuration"
+git push origin main
+```
+
+## 2. Deploy to Hugging Face Spaces
+The `todo_task_tracker` directory now contains all the files needed for your Hugging Face Space deployment.
+
+### If you already have a Hugging Face Space repository:
+```bash
+# Navigate to your Hugging Face Space repository
+cd /path/to/your/hf/space/repository
+
+# Copy the prepared files from todo_task_tracker
+xcopy C:\hck_ll_phase_II\phase_two_hackthn_two\todo_task_tracker\* /E /I /Y .
+
+# Commit and push to Hugging Face
+git add .
+git commit -m "Update for deployment"
+git push origin main
+```
+
+### If you need to create a new Hugging Face Space:
+1. Go to https://huggingface.co/new-space
+2. Create a new Space with Docker SDK
+3. Clone the Space repository:
+```bash
+git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
+cd YOUR_SPACE_NAME
+```
+
+4. Copy the prepared files:
+```bash
+xcopy C:\hck_ll_phase_II\phase_two_hackthn_two\todo_task_tracker\* /E /I /Y .
+```
+
+5. Commit and push:
+```bash
+git add .
+git commit -m "Initial deployment"
+git push origin main
+```
+
+## 3. Deploy frontend to Vercel (optional)
+```bash
+cd C:\hck_ll_phase_II\phase_two_hackthn_two\frontend
+vercel --prod
+```
+
+## Files in todo_task_tracker directory (ready for Hugging Face deployment):
+- app.py - Entry point for Hugging Face Spaces
+- Dockerfile - Container configuration
+- requirements.txt - Python dependencies
+- src/ - Source code directory with all backend files
+- README.md - Space configuration
+
+Your todo application is now ready for deployment on both GitHub and Hugging Face Spaces!
