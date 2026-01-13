@@ -1,41 +1,32 @@
-// Mock authentication service since backend doesn't have auth endpoints yet
+// Authentication service using auth config
+import authConfig from '../config/auth.config';
+
 const authService = {
   async register(name: string, email: string, password: string) {
-    // Backend doesn't have auth endpoints yet, so we'll simulate success
-    console.warn('Auth endpoints not available in backend - using mock auth');
-    const mockToken = 'mock-jwt-token-for-testing';
-    localStorage.setItem('token', mockToken);
-    return { user: { id: 'mock-user-id', name, email }, token: mockToken };
+    return await authConfig.signUp.email(name, email, password);
   },
 
   async login(email: string, password: string) {
-    // Backend doesn't have auth endpoints yet, so we'll simulate success
-    console.warn('Auth endpoints not available in backend - using mock auth');
-    const mockToken = 'mock-jwt-token-for-testing';
-    localStorage.setItem('token', mockToken);
-    return { user: { id: 'mock-user-id', email }, token: mockToken };
+    return await authConfig.signIn.email(email, password);
   },
 
   async logout() {
-    // Clear tokens from localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+    await authConfig.signOut();
   },
 
   // Get current user info
   async getCurrentUser() {
-    // Backend doesn't have auth endpoints yet, return mock user
-    const token = localStorage.getItem('token');
-    if (!token) {
+    const userData = await authConfig.checkSession();
+    if (!userData) {
       throw new Error('No authentication token found');
     }
-
-    return { id: 'mock-user-id', name: 'Mock User', email: 'mock@example.com' };
+    return userData;
   },
 
   // Check if user is authenticated
   isAuthenticated() {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    return !!token;
   },
 
   // Get token from localStorage

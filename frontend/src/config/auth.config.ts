@@ -1,93 +1,64 @@
+// Mock authentication configuration since backend doesn't have auth endpoints
 const authConfig = {
-  // Sign-in with email
+  // Sign-in with email - mocked since backend doesn't support auth
   signIn: {
     email: async (email: string, password: string) => {
-      const response = await fetch('/api/auth/sign-in/email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      console.warn('Auth endpoints not available in backend - using mock auth');
+      // Simulate successful login
+      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('token', mockToken);
+      return {
+        user: {
+          id: `user_${Math.random().toString(36).substr(2, 9)}`,
+          name: email.split('@')[0],
+          email
         },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Sign-in failed');
-      }
-
-      return await response.json();
+        token: mockToken
+      };
     },
   },
 
-  // Sign-up with email
+  // Sign-up with email - mocked since backend doesn't support auth
   signUp: {
     email: async (name: string, email: string, password: string) => {
-      const response = await fetch('/api/auth/sign-up/email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      console.warn('Auth endpoints not available in backend - using mock auth');
+      // Simulate successful signup
+      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('token', mockToken);
+      return {
+        user: {
+          id: `user_${Math.random().toString(36).substr(2, 9)}`,
+          name,
+          email
         },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Sign-up failed');
-      }
-
-      return await response.json();
+        token: mockToken
+      };
     },
   },
 
-  // Sign-out
+  // Sign-out - clears local storage
   signOut: async () => {
-    const token = localStorage.getItem('token');
-
-    const response = await fetch('/api/auth/sign-out', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    // Clear local storage regardless of API response
+    // Clear local storage
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
-
-    if (!response.ok) {
-      console.error('Sign-out API call failed');
-    }
-
-    return response.ok;
+    return true;
   },
 
-  // Check session
+  // Check session - checks local storage
   checkSession: async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       return null;
     }
 
-    try {
-      const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        return await response.json();
-      } else {
-        // Token might be invalid/expired, clear it
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        return null;
-      }
-    } catch (error) {
-      console.error('Session check failed:', error);
-      return null;
-    }
+    // Return mock user data since there's no backend auth
+    const tokenParts = token.split('_');
+    const userId = tokenParts.length > 2 ? tokenParts[2] : 'mock_user';
+    return {
+      id: userId,
+      name: 'Mock User',
+      email: 'mock@example.com'
+    };
   },
 };
 
