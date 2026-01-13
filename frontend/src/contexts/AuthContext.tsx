@@ -25,26 +25,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          setUser(userData);
-          setIsAuthenticated(true);
+        // Since backend doesn't have auth endpoints, we'll use mock auth
+        if (authService.isAuthenticated()) {
+          const userData = await authService.getCurrentUser();
+          if (userData) {
+            setUser(userData);
+            setIsAuthenticated(true);
+          }
         } else {
           setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Session check failed:', error);
-        setIsAuthenticated(false);
+        // Still set as authenticated for mock auth
+        setIsAuthenticated(authService.isAuthenticated());
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (authService.isAuthenticated()) {
-      checkSession();
-    } else {
-      setIsLoading(false);
-    }
+    // Initialize auth state based on mock auth
+    checkSession();
 
     // Listen for storage changes (cross-tab synchronization)
     const handleStorageChange = () => {
@@ -64,11 +65,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       setIsAuthenticated(true);
       router.push('/');
-      router.refresh();
+      // Note: router.refresh() might not be available in all Next.js versions
+      // If you get an error, remove this line
     } catch (error: any) {
-      throw new Error(error.message || 'An error occurred during login');
-    } finally {
       setIsLoading(false);
+      throw new Error(error.message || 'An error occurred during login');
     }
   };
 
@@ -80,11 +81,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       setIsAuthenticated(true);
       router.push('/');
-      router.refresh();
+      // Note: router.refresh() might not be available in all Next.js versions
+      // If you get an error, remove this line
     } catch (error: any) {
-      throw new Error(error.message || 'An error occurred during signup');
-    } finally {
       setIsLoading(false);
+      throw new Error(error.message || 'An error occurred during signup');
     }
   };
 
@@ -93,7 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setIsAuthenticated(false);
     router.push('/login');
-    router.refresh();
+    // Note: router.refresh() might not be available in all Next.js versions
+    // If you get an error, remove this line
   };
 
   const value = {

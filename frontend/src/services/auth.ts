@@ -1,75 +1,36 @@
+// Mock authentication service since backend doesn't have auth endpoints yet
 const authService = {
   async register(name: string, email: string, password: string) {
-    const response = await fetch('/api/auth/sign-up/email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Registration failed');
-    }
-
-    return await response.json();
+    // Backend doesn't have auth endpoints yet, so we'll simulate success
+    console.warn('Auth endpoints not available in backend - using mock auth');
+    const mockToken = 'mock-jwt-token-for-testing';
+    localStorage.setItem('token', mockToken);
+    return { user: { id: 'mock-user-id', name, email }, token: mockToken };
   },
 
   async login(email: string, password: string) {
-    const response = await fetch('/api/auth/sign-in/email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
-    }
-
-    return await response.json();
+    // Backend doesn't have auth endpoints yet, so we'll simulate success
+    console.warn('Auth endpoints not available in backend - using mock auth');
+    const mockToken = 'mock-jwt-token-for-testing';
+    localStorage.setItem('token', mockToken);
+    return { user: { id: 'mock-user-id', email }, token: mockToken };
   },
 
   async logout() {
     // Clear tokens from localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
-
-    // Optionally notify backend about logout
-    try {
-      await fetch('/api/auth/sign-out', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-    } catch (error) {
-      console.error('Logout API call failed:', error);
-    }
   },
 
   // Get current user info
   async getCurrentUser() {
+    // Backend doesn't have auth endpoints yet, return mock user
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch('/api/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user information');
-    }
-
-    return await response.json();
+    return { id: 'mock-user-id', name: 'Mock User', email: 'mock@example.com' };
   },
 
   // Check if user is authenticated

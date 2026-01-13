@@ -46,9 +46,16 @@ def copy_backend_to_hf_space(backend_dir, hf_space_dir):
 
         # Hugging Face Spaces typically let the system assign port via $PORT env var
         # Replace EXPOSE 7860 with EXPOSE $PORT for better compatibility
+        # NOTE: Dockerfile doesn't support inline comments after EXPOSE, so we just replace the port
         dockerfile_content = dockerfile_content.replace(
             "EXPOSE 7860",
-            "EXPOSE $PORT  # Hugging Face Spaces uses dynamic port assignment"
+            "EXPOSE $PORT"
+        )
+
+        # Also update the CMD to handle the PORT environment variable properly
+        dockerfile_content = dockerfile_content.replace(
+            'CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port $PORT"]',
+            'CMD ["sh", "-c", "uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-7860}"]'
         )
 
         with open(dockerfile_path, 'w', encoding='utf-8') as f:

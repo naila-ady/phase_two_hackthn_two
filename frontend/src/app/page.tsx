@@ -8,7 +8,7 @@ import FilterControls from './components/FilterControls';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Todo } from './types/Todo';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://nkamdar-todo-task-tracker.hf.space/api/v1';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
