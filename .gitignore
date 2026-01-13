@@ -58,4 +58,6 @@ logs/
 # Secrets and config
 config/secrets.yml
 secrets.json
-0331 2436713
+
+# Claude Code temporary files
+tmpclaude-*.cwd
