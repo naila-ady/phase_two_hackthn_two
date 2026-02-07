@@ -7,8 +7,9 @@ import TodoForm from './components/TodoForm';
 import FilterControls from './components/FilterControls';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Todo } from './types/Todo';
+import authService from '@/services/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://nkamdar-todo-task-tracker.hf.space/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,19 +26,24 @@ export default function Home() {
     direction: 'desc'
   });
 
-  // Fetch todos from the API
+  // Fetch todos from the API only when authenticated
   useEffect(() => {
     const fetchTodos = async () => {
-      try {
-        const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`);
-        setTodos(response.data);
-        setFilteredTodos(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch todos');
-        setLoading(false);
-        console.error(err);
+      // Only fetch if we have a valid token
+      if (authService.isAuthenticated()) {
+        try {
+          const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`, {
+            headers: authService.getAuthHeader()
+          });
+          setTodos(response.data);
+          setFilteredTodos(response.data);
+        } catch (err) {
+          setError('Failed to fetch todos');
+          console.error(err);
+        }
       }
+      // Set loading to false regardless - if not authenticated, we'll show empty state
+      setLoading(false);
     };
 
     fetchTodos();
@@ -95,7 +101,9 @@ export default function Home() {
   // Function to add a new todo
   const addTodo = async (newTodo: Omit<Todo, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const response = await axios.post<Todo>(`${API_BASE_URL}/todos`, newTodo);
+      const response = await axios.post<Todo>(`${API_BASE_URL}/todos`, newTodo, {
+        headers: authService.getAuthHeader()
+      });
       setTodos([response.data, ...todos]);
     } catch (err) {
       setError('Failed to add todo');
@@ -106,7 +114,9 @@ export default function Home() {
   // Function to update a todo
   const updateTodo = async (id: string, updatedTodo: Partial<Todo>) => {
     try {
-      const response = await axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, updatedTodo);
+      const response = await axios.put<Todo>(`${API_BASE_URL}/todos/${id}`, updatedTodo, {
+        headers: authService.getAuthHeader()
+      });
       setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
     } catch (err) {
       setError('Failed to update todo');
@@ -117,7 +127,9 @@ export default function Home() {
   // Function to delete a todo
   const deleteTodo = async (id: string) => {
     try {
-      await axios.delete(`${API_BASE_URL}/todos/${id}`);
+      await axios.delete(`${API_BASE_URL}/todos/${id}`, {
+        headers: authService.getAuthHeader()
+      });
       setTodos(todos.filter(todo => todo.id !== id));
     } catch (err) {
       setError('Failed to delete todo');
@@ -128,7 +140,9 @@ export default function Home() {
   // Function to toggle completion status
   const toggleCompletion = async (id: string) => {
     try {
-      const response = await axios.patch<Todo>(`${API_BASE_URL}/todos/${id}/toggle`);
+      const response = await axios.patch<Todo>(`${API_BASE_URL}/todos/${id}/toggle`, {}, {
+        headers: authService.getAuthHeader()
+      });
       setTodos(todos.map(todo => (todo.id === id ? response.data : todo)));
     } catch (err) {
       setError('Failed to toggle completion');

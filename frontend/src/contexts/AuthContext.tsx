@@ -64,9 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authService.storeTokens(data.token);
       setUser(data.user);
       setIsAuthenticated(true);
-      router.push('/');
-      // Note: router.refresh() might not be available in all Next.js versions
-      // If you get an error, remove this line
+      // Small delay to ensure state updates properly before navigation
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
     } catch (error: any) {
       setIsLoading(false);
       throw new Error(error.message || 'An error occurred during login');
@@ -80,9 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authService.storeTokens(data.token);
       setUser(data.user);
       setIsAuthenticated(true);
-      router.push('/');
-      // Note: router.refresh() might not be available in all Next.js versions
-      // If you get an error, remove this line
+      // Small delay to ensure state updates properly before navigation
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
     } catch (error: any) {
       setIsLoading(false);
       throw new Error(error.message || 'An error occurred during signup');

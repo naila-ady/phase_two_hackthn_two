@@ -61,7 +61,7 @@ It's a prepared set of files that need to be copied to your actual Hugging Face 
 - `README.md`: Space configuration and description
 
 ### Environment Variables for Production
-- `DATABASE_URL`: Database connection string (e.g., `postgresql://user:pass@host:port/dbname` or `sqlite:///./todo_app.db`)
+- `DATABASE_URL`: Database connection string (e.g., `postgresql://user:pass@host:port/dbname`)
 - `SECRET_KEY`: Secret key for security (use a strong, random key in production)
 - `DEBUG`: Set to `False` for production
 - `ALLOWED_ORIGINS`: Comma-separated list of allowed origins (e.g., `http://localhost:3000,https://yourdomain.com`)

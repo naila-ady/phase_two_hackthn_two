@@ -41,6 +41,20 @@ const authService = {
       localStorage.setItem('refreshToken', refreshToken);
     }
   },
+
+  // Get authorization header with token
+  getAuthHeader(): { [key: string]: string } {
+    const token = this.getToken();
+    if (token) {
+      return {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+    }
+    return {
+      'Content-Type': 'application/json'
+    };
+  }
 };
 
 export default authService;

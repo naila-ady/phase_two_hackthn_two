@@ -167,9 +167,8 @@ app.add_middleware(
 # Add your environment-specific variables here
 
 # Database URL (update with your actual database connection)
-# For production: postgresql://user:password@host:port/database_name
-# For development: sqlite:///./todo_app.db
-DATABASE_URL="sqlite:///./todo_app.db"
+# Database URL for PostgreSQL/NeonDB
+DATABASE_URL="postgresql://user:password@host:port/database_name"
 
 # Secret key for the application (use a strong, random key in production)
 SECRET_KEY="your-super-secret-key-change-this-in-production"

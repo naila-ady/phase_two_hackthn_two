@@ -13,6 +13,8 @@ Sync Impact Report:
 -->
 # Phase II Todo Application Constitution
 
+## claude code can never access my .env or any credential files nad folders
+
 ## Core Principles
 
 ### I. Full-Stack Todo Application Focus

@@ -1,37 +1,66 @@
-// Mock authentication configuration since backend doesn't have auth endpoints
+// Authentication configuration for JWT-based auth
 const authConfig = {
-  // Sign-in with email - mocked since backend doesn't support auth
+  // Base API URL
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1',
+
+  // Sign-in with email - calls backend API
   signIn: {
     email: async (email: string, password: string) => {
-      console.warn('Auth endpoints not available in backend - using mock auth');
-      // Simulate successful login
-      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('token', mockToken);
-      return {
-        user: {
-          id: `user_${Math.random().toString(36).substr(2, 9)}`,
-          name: email.split('@')[0],
-          email
+      const response = await fetch(`${authConfig.baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        token: mockToken
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Login failed');
+      }
+
+      const data = await response.json();
+
+      // Store the JWT token
+      localStorage.setItem('token', data.access_token);
+
+      // Get user info using the token
+      const userInfo = await authConfig.checkSession();
+
+      return {
+        user: userInfo,
+        token: data.access_token
       };
     },
   },
 
-  // Sign-up with email - mocked since backend doesn't support auth
+  // Sign-up with email - calls backend API
   signUp: {
     email: async (name: string, email: string, password: string) => {
-      console.warn('Auth endpoints not available in backend - using mock auth');
-      // Simulate successful signup
-      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('token', mockToken);
-      return {
-        user: {
-          id: `user_${Math.random().toString(36).substr(2, 9)}`,
-          name,
-          email
+      const response = await fetch(`${authConfig.baseUrl}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        token: mockToken
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Registration failed');
+      }
+
+      const data = await response.json();
+
+      // Store the JWT token
+      localStorage.setItem('token', data.access_token);
+
+      // Get user info using the token
+      const userInfo = await authConfig.checkSession();
+
+      return {
+        user: userInfo,
+        token: data.access_token
       };
     },
   },
@@ -44,21 +73,36 @@ const authConfig = {
     return true;
   },
 
-  // Check session - checks local storage
+  // Check session - verifies token and gets user info
   checkSession: async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       return null;
     }
 
-    // Return mock user data since there's no backend auth
-    const tokenParts = token.split('_');
-    const userId = tokenParts.length > 2 ? tokenParts[2] : 'mock_user';
-    return {
-      id: userId,
-      name: 'Mock User',
-      email: 'mock@example.com'
-    };
+    try {
+      // Verify token with backend - send as form data which FastAPI expects for string param
+      const response = await fetch(`${authConfig.baseUrl}/auth/verify-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `token=${encodeURIComponent(token)}`
+      });
+
+      if (!response.ok) {
+        // Token is invalid/expired, remove it
+        localStorage.removeItem('token');
+        return null;
+      }
+
+      const userData = await response.json();
+      return userData;
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      localStorage.removeItem('token');
+      return null;
+    }
   },
 };
 

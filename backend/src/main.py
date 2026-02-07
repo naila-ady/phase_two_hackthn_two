@@ -1,9 +1,16 @@
 from fastapi import FastAPI
 from src.api.todo_router import router as todo_router
+from src.api.auth_router import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from src.database import engine
 from src.models.todo_model import Todo
+from src.models.auth_model import User
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(
     title="Todo API",
@@ -46,10 +53,17 @@ app.add_middleware(
 # Create database tables
 @app.on_event("startup")
 def on_startup():
-    Todo.metadata.create_all(bind=engine)
+    # For PostgreSQL, it's better to use Alembic for schema management
+    # But we'll keep this for initial setup
+    try:
+        Todo.metadata.create_all(bind=engine)
+        User.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Error creating tables: {e}")
 
-# Include the todo router
+# Include the routers
 app.include_router(todo_router, prefix="/api/v1", tags=["todos"])
+app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 
 @app.get("/")
 def read_root():

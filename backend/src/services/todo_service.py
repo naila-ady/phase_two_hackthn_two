@@ -6,7 +6,7 @@ import uuid
 
 class TodoService:
     @staticmethod
-    def create_todo(session: Session, todo: TodoCreate) -> TodoResponse:
+    def create_todo(session: Session, todo: TodoCreate, user_id: Optional[uuid.UUID] = None) -> TodoResponse:
         # Validate the title is not empty
         if not todo.title or len(todo.title.strip()) == 0:
             raise ValueError("Title must not be empty")
@@ -20,6 +20,7 @@ class TodoService:
             priority=todo.priority,
             category=todo.category,
             due_date=todo.due_date,
+            user_id=user_id,  # Associate with user
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
@@ -34,6 +35,7 @@ class TodoService:
             category=db_todo.category,
             due_date=db_todo.due_date,
             id=db_todo.id,
+            user_id=db_todo.user_id,
             created_at=db_todo.created_at,
             updated_at=db_todo.updated_at
         )
@@ -51,6 +53,7 @@ class TodoService:
                 category=db_todo.category,
                 due_date=db_todo.due_date,
                 id=db_todo.id,
+                user_id=db_todo.user_id,
                 created_at=db_todo.created_at,
                 updated_at=db_todo.updated_at
             )
@@ -63,9 +66,14 @@ class TodoService:
         priority: Optional[str] = None,
         category: Optional[str] = None,
         sort_by: Optional[str] = None,
-        order: Optional[str] = "asc"
+        order: Optional[str] = "asc",
+        user_id: Optional[uuid.UUID] = None  # Filter by user
     ) -> List[TodoResponse]:
         statement = select(Todo)
+
+        # Filter by user if provided
+        if user_id is not None:
+            statement = statement.where(Todo.user_id == user_id)
 
         if completed is not None:
             statement = statement.where(Todo.completed == completed)
@@ -104,6 +112,7 @@ class TodoService:
                 category=todo.category,
                 due_date=todo.due_date,
                 id=todo.id,
+                user_id=todo.user_id,
                 created_at=todo.created_at,
                 updated_at=todo.updated_at
             )
@@ -111,8 +120,13 @@ class TodoService:
         ]
 
     @staticmethod
-    def update_todo(session: Session, todo_id: uuid.UUID, todo_update: TodoUpdate) -> Optional[TodoResponse]:
+    def update_todo(session: Session, todo_id: uuid.UUID, todo_update: TodoUpdate, user_id: Optional[uuid.UUID] = None) -> Optional[TodoResponse]:
         statement = select(Todo).where(Todo.id == todo_id)
+
+        # If user_id is provided, ensure the todo belongs to the user
+        if user_id is not None:
+            statement = statement.where(Todo.user_id == user_id)
+
         db_todo = session.exec(statement).first()
 
         if not db_todo:
@@ -145,13 +159,19 @@ class TodoService:
             category=db_todo.category,
             due_date=db_todo.due_date,
             id=db_todo.id,
+            user_id=db_todo.user_id,
             created_at=db_todo.created_at,
             updated_at=db_todo.updated_at
         )
 
     @staticmethod
-    def delete_todo(session: Session, todo_id: uuid.UUID) -> bool:
+    def delete_todo(session: Session, todo_id: uuid.UUID, user_id: Optional[uuid.UUID] = None) -> bool:
         statement = select(Todo).where(Todo.id == todo_id)
+
+        # If user_id is provided, ensure the todo belongs to the user
+        if user_id is not None:
+            statement = statement.where(Todo.user_id == user_id)
+
         db_todo = session.exec(statement).first()
 
         if not db_todo:
@@ -162,8 +182,13 @@ class TodoService:
         return True
 
     @staticmethod
-    def toggle_todo_completion(session: Session, todo_id: uuid.UUID) -> Optional[TodoResponse]:
+    def toggle_todo_completion(session: Session, todo_id: uuid.UUID, user_id: Optional[uuid.UUID] = None) -> Optional[TodoResponse]:
         statement = select(Todo).where(Todo.id == todo_id)
+
+        # If user_id is provided, ensure the todo belongs to the user
+        if user_id is not None:
+            statement = statement.where(Todo.user_id == user_id)
+
         db_todo = session.exec(statement).first()
 
         if not db_todo:
@@ -185,6 +210,7 @@ class TodoService:
             category=db_todo.category,
             due_date=db_todo.due_date,
             id=db_todo.id,
+            user_id=db_todo.user_id,
             created_at=db_todo.created_at,
             updated_at=db_todo.updated_at
         )

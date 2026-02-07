@@ -41,7 +41,10 @@ export default function TodoForm({ onSubmit }: TodoFormProps) {
       description: formData.description || undefined,  // Convert empty string to undefined
       priority: formData.priority,
       category: formData.category || undefined,  // Convert empty string to undefined
-      due_date: formData.due_date ? new Date(formData.due_date + 'T00:00:00').toISOString() : undefined,  // Format date as ISO string or undefined
+      due_date: formData.due_date ? (() => {
+        const date = new Date(formData.due_date + 'T00:00:00');
+        return isNaN(date.getTime()) ? undefined : date.toISOString();
+      })() : undefined,  // Format date as ISO string or undefined
       completed: formData.completed  // Use the completed state from form
     };
 
